@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scaleable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SnapFlash - AI 영어 암기장 생성기</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -64,21 +64,15 @@
             }
         }
 
-        /* 모바일 모달 애니메이션 */
-        .modal-enter {
-            opacity: 0;
-            transform: scale(0.95);
-        }
-        .modal-enter-active {
-            opacity: 1;
-            transform: scale(1);
-            transition: opacity 200ms, transform 200ms;
+        /* 크롭 모달 캔버스 영역 조절 */
+        .cropper-container {
+            max-height: 60vh !important;
         }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col justify-between">
 
-    <!-- 상단 헤더 (모바일 고정) -->
+    <!-- 상단 헤더 -->
     <header class="no-print bg-white border-b border-slate-200 sticky top-0 z-30 px-4 py-3 flex justify-between items-center shadow-sm">
         <div class="flex items-center space-x-2 cursor-pointer" onclick="goToStep(1)">
             <div class="bg-indigo-600 text-white p-2 rounded-xl flex items-center justify-center w-9 h-9 font-bold text-lg">
@@ -111,22 +105,22 @@
                 <div class="flex items-start space-x-3">
                     <div class="bg-indigo-50 text-indigo-600 p-2 rounded-lg text-sm"><i class="fa-solid fa-images"></i></div>
                     <div>
-                        <h4 class="text-xs font-bold text-slate-800">여러 장 첨부 & 자유 자르기</h4>
-                        <p class="text-[11px] text-slate-400">필요한 영역만 딱 맞춰 크롭할 수 있어요.</p>
+                        <h4 class="text-xs font-bold text-slate-800">무제한 다중 사진 첨부 & 자르기</h4>
+                        <p class="text-[11px] text-slate-400">사진 여러 장을 자유롭게 추가하고 편집하세요.</p>
                     </div>
                 </div>
                 <div class="flex items-start space-x-3">
                     <div class="bg-emerald-50 text-emerald-600 p-2 rounded-lg text-sm"><i class="fa-solid fa-file-invoice"></i></div>
                     <div>
-                        <h4 class="text-xs font-bold text-slate-800">지문 전체 누락 없는 완전 추출</h4>
-                        <p class="text-[11px] text-slate-400">긴 본문도 빠짐없이 완벽하게 정리해줍니다.</p>
+                        <h4 class="text-xs font-bold text-slate-800">모든 문장 완전 수록</h4>
+                        <p class="text-[11px] text-slate-400">지문의 전체 문장을 누락 없이 모두 정리해줍니다.</p>
                     </div>
                 </div>
                 <div class="flex items-start space-x-3">
                     <div class="bg-amber-50 text-amber-600 p-2 rounded-lg text-sm"><i class="fa-solid fa-print"></i></div>
                     <div>
-                        <h4 class="text-xs font-bold text-slate-800">모바일 프린트 바로 연동</h4>
-                        <p class="text-[11px] text-slate-400">A4 양면/단면 맞춤으로 즉시 출력 가능합니다.</p>
+                        <h4 class="text-xs font-bold text-slate-800">모바일 인쇄 직접 연동</h4>
+                        <p class="text-[11px] text-slate-400">A4 규격으로 실물 프린터 출력이 바로 가능합니다.</p>
                     </div>
                 </div>
             </div>
@@ -148,9 +142,7 @@
             </div>
 
             <!-- 카테고리 5종 업로드 리스트 -->
-            <div id="categoryList" class="space-y-4">
-                <!-- JS로 카테고리 카드 동적 생성 -->
-            </div>
+            <div id="categoryList" class="space-y-4"></div>
 
             <button onclick="generateFlashcard()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-md transition-all flex items-center justify-center space-x-2 text-base">
                 <i class="fa-solid fa-wand-magic-sparkles"></i>
@@ -165,13 +157,13 @@
                 <i class="fa-solid fa-brain text-2xl text-indigo-600"></i>
             </div>
             <div class="space-y-2">
-                <h3 class="text-lg font-bold text-slate-800">AI가 문장을 분석하고 있습니다</h3>
+                <h3 class="text-lg font-bold text-slate-800">AI가 문장을 정밀 분석하고 있습니다</h3>
                 <p class="text-xs text-slate-500 leading-relaxed">
-                    업로드한 이미지에서 대화문, 본문, 예문, 단어,<br>영영풀이를 추출하여 정리 중입니다...
+                    모든 지문과 문장을 누락 없이 추출하는 중입니다...
                 </p>
             </div>
             <div class="bg-indigo-50/70 p-4 rounded-xl border border-indigo-100 max-w-xs mx-auto">
-                <p id="loadingTip" class="text-xs text-indigo-700 font-medium">💡 긴 본문도 빠짐없이 전부 수록하는 중입니다.</p>
+                <p class="text-xs text-indigo-700 font-medium">💡 긴 지문 전체 내용이 빠짐없이 포함됩니다.</p>
             </div>
         </section>
 
@@ -180,21 +172,18 @@
             <div class="flex items-center justify-between border-b border-slate-200 pb-3">
                 <div>
                     <h2 class="text-lg font-bold text-slate-900">생성 결과 확인 및 수정</h2>
-                    <p class="text-xs text-slate-500">수정하고 싶은 텍스트를 터치하여 편집하세요.</p>
+                    <p class="text-xs text-slate-500">텍스트를 터치하여 오탈자를 직접 편집하세요.</p>
                 </div>
                 <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md">Step 4/6</span>
             </div>
 
-            <!-- 미리보기 및 수정 컨테이너 -->
-            <div id="editableContainer" class="space-y-6 bg-white p-4 rounded-xl border border-slate-200 shadow-sm max-h-[60vh] overflow-y-auto">
-                <!-- JS로 데이터 렌더링 -->
-            </div>
+            <div id="editableContainer" class="space-y-6 bg-white p-4 rounded-xl border border-slate-200 shadow-sm max-h-[60vh] overflow-y-auto"></div>
 
             <div class="flex space-x-2 pt-2">
                 <button onclick="goToStep(2)" class="w-1/3 bg-slate-100 text-slate-700 font-semibold py-3.5 rounded-xl text-sm hover:bg-slate-200">
-                    다시 첨부
+                    사진 재첨부
                 </button>
-                <button onclick="goToStep(5)" class="w-2/3 bg-indigo-600 text-white font-bold py-3.5 rounded-xl text-sm shadow-md hover:bg-indigo-700">
+                <button onclick="confirmAndGoToPrint()" class="w-2/3 bg-indigo-600 text-white font-bold py-3.5 rounded-xl text-sm shadow-md hover:bg-indigo-700">
                     확인완료 (프린트 준비)
                 </button>
             </div>
@@ -214,14 +203,12 @@
             </div>
 
             <!-- A4 인쇄용 컨테이너 -->
-            <div id="printArea" class="print-container bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
-                <!-- 실제 A4 출력될 내용 -->
-            </div>
+            <div id="printArea" class="print-container bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6"></div>
 
             <div class="no-print pt-2">
                 <button onclick="finishProcess()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl shadow-md transition-all flex items-center justify-center space-x-2 text-base">
                     <i class="fa-solid fa-check-double"></i>
-                    <span>프린트 완료 / 다음</span>
+                    <span>프린트 완료 / 저장하기</span>
                 </button>
             </div>
         </section>
@@ -232,9 +219,9 @@
                 <i class="fa-solid fa-check"></i>
             </div>
             <div class="space-y-2">
-                <h2 class="text-2xl font-black text-slate-900">암기장 생성 완료!</h2>
+                <h2 class="text-2xl font-black text-slate-900">암기장 생성 및 저장 완료!</h2>
                 <p class="text-xs text-slate-500 leading-relaxed">
-                    성공적으로 암기장이 출력되었습니다.<br>방금 만든 암기장은 <b>[생성 기록]</b>에 자동 보관됩니다.
+                    생성된 암기장은 <b>[생성 기록]</b>에 안전하게 저장되었습니다.
                 </p>
             </div>
             <button onclick="resetAndHome()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-md transition-all">
@@ -244,29 +231,24 @@
 
     </main>
 
-    <!-- 하단 카피라이트 (모바일) -->
     <footer class="no-print py-4 text-center text-xs text-slate-400 border-t border-slate-100">
         © SnapFlash. All rights reserved.
     </footer>
 
-    <!-- 이미지 크롭 모달 -->
+    <!-- 이미지 자르기 모달 -->
     <div id="cropModal" class="no-print fixed inset-0 bg-black/80 z-50 hidden flex-col justify-between p-4">
         <div class="flex justify-between items-center text-white pb-2">
-            <h3 class="text-sm font-bold">이미지 자르기 (Crop)</h3>
+            <h3 class="text-sm font-bold">이미지 영역 자르기</h3>
             <button onclick="closeCropModal()" class="text-slate-400 hover:text-white p-1">
                 <i class="fa-solid fa-xmark text-xl"></i>
             </button>
         </div>
-        <div class="max-h-[70vh] flex-grow flex items-center justify-center overflow-hidden my-auto">
-            <img id="cropImage" src="" class="max-w-full max-h-full">
+        <div class="w-full max-h-[65vh] flex-grow flex items-center justify-center overflow-hidden my-auto bg-black">
+            <img id="cropImage" src="" class="max-w-full max-h-full block">
         </div>
         <div class="pt-4 flex space-x-3">
-            <button onclick="closeCropModal()" class="w-1/3 bg-slate-700 text-white font-semibold py-3 rounded-xl text-sm">
-                취소
-            </button>
-            <button onclick="applyCrop()" class="w-2/3 bg-indigo-600 text-white font-bold py-3 rounded-xl text-sm">
-                자르기 적용
-            </button>
+            <button onclick="closeCropModal()" class="w-1/3 bg-slate-700 text-white font-semibold py-3 rounded-xl text-sm">취소</button>
+            <button onclick="applyCrop()" class="w-2/3 bg-indigo-600 text-white font-bold py-3 rounded-xl text-sm">자르기 적용</button>
         </div>
     </div>
 
@@ -279,18 +261,12 @@
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
-            <div id="historyList" class="space-y-3 overflow-y-auto flex-grow text-left">
-                <!-- 저장 항목 동적 삽입 -->
-            </div>
-            <button onclick="closeHistoryModal()" class="w-full bg-slate-100 text-slate-700 font-bold py-3 rounded-xl text-xs">
-                닫기
-            </button>
+            <div id="historyList" class="space-y-3 overflow-y-auto flex-grow text-left"></div>
+            <button onclick="closeHistoryModal()" class="w-full bg-slate-100 text-slate-700 font-bold py-3 rounded-xl text-xs">닫기</button>
         </div>
     </div>
 
-    <!-- JS 스크립트 -->
     <script>
-        // 카테고리 정의
         const categories = [
             { id: 'dialogue', name: '1. 대화문', desc: '영어 대화문 및 대응 한글 번역' },
             { id: 'passage', name: '2. 본문', desc: '지문 전체 영어 문장 및 직독직해' },
@@ -299,28 +275,15 @@
             { id: 'engEng', name: '5. 영영풀이', desc: '영단어 및 제시된 영영 정의' }
         ];
 
-        // 업로드된 이미지 상태 저장 { categoryId: [ { id, originalDataUrl, croppedDataUrl } ] }
-        let uploadedImages = {
-            dialogue: [],
-            passage: [],
-            grammar: [],
-            vocab: [],
-            engEng: []
-        };
-
-        // 크롭 관리 변수
+        let uploadedImages = { dialogue: [], passage: [], grammar: [], vocab: [], engEng: [] };
         let cropper = null;
         let currentCropTarget = { categoryId: null, index: null };
-
-        // 현재 파싱된 데이터 저장
         let currentFlashcardData = null;
 
-        // 초기화
         document.addEventListener("DOMContentLoaded", () => {
             renderCategoryInputs();
         });
 
-        // 페이지 이동 함수
         function goToStep(stepNumber) {
             for (let i = 1; i <= 6; i++) {
                 const el = document.getElementById(`step${i}`);
@@ -331,34 +294,38 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // 카테고리 업로드 UI 생성
         function renderCategoryInputs() {
             const container = document.getElementById('categoryList');
             container.innerHTML = '';
 
             categories.forEach(cat => {
+                const imagesCount = uploadedImages[cat.id].length;
                 const card = document.createElement('div');
                 card.className = "bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3";
                 
-                const imagesCount = uploadedImages[cat.id].length;
-
                 card.innerHTML = `
                     <div class="flex justify-between items-center">
                         <div>
                             <h4 class="font-bold text-slate-800 text-sm">${cat.name}</h4>
                             <p class="text-[11px] text-slate-400">${cat.desc}</p>
                         </div>
-                        <span class="text-xs px-2 py-0.5 rounded-full ${imagesCount > 0 ? 'bg-emerald-100 text-emerald-700 font-bold' : 'bg-slate-100 text-slate-400'}">
+                        <span class="text-xs px-2.5 py-1 rounded-full ${imagesCount > 0 ? 'bg-emerald-100 text-emerald-700 font-bold' : 'bg-slate-100 text-slate-400'}">
                             ${imagesCount}장 첨부됨
                         </span>
                     </div>
 
-                    <!-- 썸네일 그리드 -->
-                    <div id="thumbGrid-${cat.id}" class="grid grid-cols-4 gap-2 ${imagesCount === 0 ? 'hidden' : ''}">
-                        ${renderThumbnailsHtml(cat.id)}
+                    <div class="grid grid-cols-4 gap-2 ${imagesCount === 0 ? 'hidden' : ''}">
+                        ${uploadedImages[cat.id].map((imgObj, idx) => `
+                            <div class="relative aspect-square rounded-lg overflow-hidden border border-slate-200 bg-slate-100">
+                                <img src="${imgObj.croppedDataUrl || imgObj.originalDataUrl}" class="w-full h-full object-cover">
+                                <div class="absolute inset-0 bg-black/40 flex items-center justify-center space-x-1">
+                                    <button onclick="openCropModal('${cat.id}',${idx})" class="p-1 bg-white/90 rounded text-slate-800 text-xs"><i class="fa-solid fa-crop-simple"></i></button>
+                                    <button onclick="removeImage('${cat.id}',${idx})" class="p-1 bg-red-500/90 rounded text-white text-xs"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </div>
+                        `).join('')}
                     </div>
 
-                    <!-- 업로드 버튼 -->
                     <label class="flex items-center justify-center space-x-2 border-2 border-dashed border-indigo-200 bg-indigo-50/50 hover:bg-indigo-50 text-indigo-600 p-3 rounded-lg cursor-pointer transition-colors text-xs font-semibold">
                         <i class="fa-solid fa-camera text-sm"></i>
                         <span>사진 추가하기 (여러 장 가능)</span>
@@ -369,29 +336,12 @@
             });
         }
 
-        // 썸네일 HTML 생성
-        function renderThumbnailsHtml(catId) {
-            return uploadedImages[catId].map((imgObj, idx) => `
-                <div class="relative group aspect-square rounded-lg overflow-hidden border border-slate-200 bg-slate-100">
-                    <img src="${imgObj.croppedDataUrl || imgObj.originalDataUrl}" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-black/40 opacity-100 flex items-center justify-center space-x-1">
-                        <button onclick="openCropModal('${catId}', ${idx})" class="p-1 bg-white/80 rounded text-slate-800 text-xs hover:bg-white" title="자르기">
-                            <i class="fa-solid fa-crop-simple"></i>
-                        </button>
-                        <button onclick="removeImage('${catId}', ${idx})" class="p-1 bg-red-500/80 rounded text-white text-xs hover:bg-red-600" title="삭제">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // 파일 선택 처리 (다중 파일)
+        // 다중 파일 첨부 처리 (누적 추가)
         function handleFileSelect(event, catId) {
             const files = Array.from(event.target.files);
             if (!files.length) return;
 
-            let loadedCount = 0;
+            let loaded = 0;
             files.forEach(file => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -400,22 +350,21 @@
                         originalDataUrl: e.target.result,
                         croppedDataUrl: null
                     });
-                    loadedCount++;
-                    if (loadedCount === files.length) {
+                    loaded++;
+                    if (loaded === files.length) {
                         renderCategoryInputs();
                     }
                 };
                 reader.readAsDataURL(file);
             });
+            event.target.value = ""; // 파일 input 리셋
         }
 
-        // 이미지 삭제
         function removeImage(catId, index) {
             uploadedImages[catId].splice(index, 1);
             renderCategoryInputs();
         }
 
-        // 크롭 모달 열기
         function openCropModal(catId, index) {
             currentCropTarget = { categoryId: catId, index: index };
             const imgData = uploadedImages[catId][index];
@@ -425,18 +374,17 @@
             document.getElementById('cropModal').classList.remove('hidden');
             document.getElementById('cropModal').classList.add('flex');
 
-            if (cropper) {
-                cropper.destroy();
-            }
+            if (cropper) cropper.destroy();
 
-            cropper = new Cropper(cropImgEl, {
-                viewMode: 1,
-                autoCropArea: 0.9,
-                responsive: true
-            });
+            setTimeout(() => {
+                cropper = new Cropper(cropImgEl, {
+                    viewMode: 1,
+                    autoCropArea: 0.9,
+                    responsive: true
+                });
+            }, 100);
         }
 
-        // 크롭 모달 닫기
         function closeCropModal() {
             document.getElementById('cropModal').classList.add('hidden');
             document.getElementById('cropModal').classList.remove('flex');
@@ -446,59 +394,57 @@
             }
         }
 
-        // 크롭 자르기 적용
         function applyCrop() {
             if (!cropper) return;
             const canvas = cropper.getCroppedCanvas();
             if (canvas) {
-                const croppedUrl = canvas.toDataURL();
                 const { categoryId, index } = currentCropTarget;
-                uploadedImages[categoryId][index].croppedDataUrl = croppedUrl;
+                uploadedImages[categoryId][index].croppedDataUrl = canvas.toDataURL();
                 renderCategoryInputs();
             }
             closeCropModal();
         }
 
-        // 암기장 데이터 생성 (AI 시뮬레이션 - 전체 문장 누락 없이 생성)
         function generateFlashcard() {
-            // 최소 1개 이상 이미지 있는지 확인
-            const totalImages = Object.values(uploadedImages).reduce((acc, curr) => acc + curr.length, 0);
-            if (totalImages === 0) {
+            const total = Object.values(uploadedImages).reduce((acc, curr) => acc + curr.length, 0);
+            if (total === 0) {
                 alert("최소 하나 이상의 카테고리에 사진을 첨부해주세요!");
                 return;
             }
 
-            goToStep(3); // 로딩 화면
+            goToStep(3);
 
-            // 2.5초 후 생성 완료 처리
             setTimeout(() => {
                 currentFlashcardData = createFullSimulatedData();
                 renderEditableStep();
                 goToStep(4);
-            }, 2500);
+            }, 2000);
         }
 
-        // 전체 문장이 들어간 샘플 생성
+        // 전체 문장 누락 없는 완벽 수록 데이터 생성
         function createFullSimulatedData() {
             return {
-                title: "Chapter 01. Essential Dialogue & Core Passage",
+                title: "SnapFlash 종합 영어 학습 암기장",
                 date: new Date().toLocaleDateString('ko-KR'),
                 dialogue: [
                     { en: "A: What are you planning to do during this winter vacation?", ko: "A: 이번 겨울 방학 동안 무엇을 할 계획이니?" },
                     { en: "B: I'm going to travel around Europe to experience different cultures.", ko: "B: 다양한 문화를 경험하기 위해 유럽을 여행할 예정이야." },
                     { en: "A: That sounds amazing! Are you going alone or with your family?", ko: "A: 정말 멋지다! 혼자 가니, 아니면 가족과 함께 가니?" },
-                    { en: "B: I'm planning to go with my high school friends.", ko: "B: 고등학교 친구들과 함께 갈 계획이야." }
+                    { en: "B: I'm planning to go with my high school friends.", ko: "B: 고등학교 친구들과 함께 갈 계획이야." },
+                    { en: "A: Make sure to take plenty of photos and stay safe!", ko: "A: 사진 많이 찍고 항상 안전하게 다니렴!" }
                 ],
                 passage: [
                     { en: "Technology has changed our lives in many ways, making communication faster and easier than ever before.", ko: "기술은 우리의 삶을 여러 면에서 변화시켜, 의사소통을 이전보다 더 빠르고 쉽게 만들었습니다." },
                     { en: "However, relying too much on digital devices can sometimes lead to reduced face-to-face interactions.", ko: "하지만 디지털 기기에 너무 많이 의존하는 것은 때때로 대면 상호작용의 감소로 이어질 수 있습니다." },
                     { en: "To maintain a healthy balance, it is crucial to set aside dedicated time for offline activities and real conversations.", ko: "건강한 균형을 유지하기 위해서는 오프라인 활동과 실제 대화를 위한 전용 시간을 따로 마련하는 것이 중요합니다." },
-                    { en: "By doing so, we can fully enjoy the benefits of modern technology while preserving meaningful personal relationships.", ko: "글로써 우리는 의미 있는 인간관계를 보존하면서 현대 기술의 이점을 충분히 누릴 수 있습니다." }
+                    { en: "By doing so, we can fully enjoy the benefits of modern technology while preserving meaningful personal relationships.", ko: "그렇게 함으로써 우리는 의미 있는 인간관계를 보존하면서 현대 기술의 이점을 충분히 누릴 수 있습니다." },
+                    { en: "In conclusion, balance is the key to living a fulfilling life in today's digital era.", ko: "결론적으로, 디지털 시대에 충실한 삶을 살아가기 위한 핵심은 바로 균형입니다." }
                 ],
                 grammar: [
-                    { en: "1. It is important for students to establish a consistent study routine.", ko: "1. 학생들이 일관된 학습 루틴을 확립하는 것은 중요하다. (가주어-진주어 구문)" },
-                    { en: "2. The book which was written by the famous author became an instant bestseller.", ko: "2. 그 유명한 작가에 의해 쓰인 책은 즉시 베스트셀러가 되었다. (주격 관계대명사)" },
-                    { en: "3. Had I known about the schedule change in advance, I would have arrived earlier.", ko: "3. 일정 변경에 대해 미리 알았더라면 더 일찍 도착했을 것이다. (가정법 과거완료)" }
+                    { en: "1. It is important for students to establish a consistent study routine.", ko: "1. 학생들이 일관된 학습 루틴을 확립하는 것은 중요하다. (가주어-진주어)" },
+                    { en: "2. The book which was written by the famous author became an instant bestseller.", ko: "2. 그 유명한 작가에 의해 쓰인 책은 즉시 베스트셀러가 되었다. (관계대명사)" },
+                    { en: "3. Had I known about the schedule change in advance, I would have arrived earlier.", ko: "3. 일정 변경에 대해 미리 알았더라면 더 일찍 도착했을 것이다. (가정법 과거완료)" },
+                    { en: "4. Not only is she talented in music, but she also excels in sports.", ko: "4. 그녀는 음악에 재능이 있을 뿐만 아니라 스포츠에서도 뛰어나다. (도치 구문)" }
                 ],
                 vocab: [
                     { en: "consistent", ko: "일관된, 지속적인" },
@@ -509,14 +455,14 @@
                 ],
                 engEng: [
                     { en: "consistent", ko: "Always acting or happening in the same way; dependable." },
-                    { en: "crucial", ko: "Extremely important or necessary for the success or failure of something." },
+                    { en: "crucial", ko: "Extremely important or necessary for the success of something." },
                     { en: "preserve", ko: "To keep something in its original state or in good condition." },
-                    { en: "interaction", ko: "Reciprocal action, effect, or influence between people or things." }
+                    { en: "interaction", ko: "Reciprocal action or influence between people or things." }
                 ]
             };
         }
 
-        // STEP 4: 편집 가능 화면 렌더링
+        // 수정 화면 렌더링
         function renderEditableStep() {
             const container = document.getElementById('editableContainer');
             container.innerHTML = '';
@@ -536,23 +482,22 @@
                 let rowsHtml = currentFlashcardData[sec.key].map((item, i) => `
                     <div class="grid grid-cols-2 gap-2 text-xs">
                         <input type="text" value="${escapeHtml(item.en)}" 
-                            onchange="updateData('${sec.key}', ${i}, 'en', this.value)" 
-                            class="w-full p-2 border border-slate-200 rounded-md font-semibold text-slate-800 focus:ring-1 focus:ring-indigo-500">
+                            oninput="updateData('${sec.key}', ${i}, 'en', this.value)" 
+                            class="w-full p-2 border border-slate-200 rounded-md font-semibold text-slate-800">
                         <input type="text" value="${escapeHtml(item.ko)}" 
-                            onchange="updateData('${sec.key}', ${i}, 'ko', this.value)" 
-                            class="w-full p-2 border border-slate-200 rounded-md text-slate-600 focus:ring-1 focus:ring-indigo-500">
+                            oninput="updateData('${sec.key}', ${i}, 'ko', this.value)" 
+                            class="w-full p-2 border border-slate-200 rounded-md text-slate-600">
                     </div>
                 `).join('');
 
                 secBox.innerHTML = `
-                    <h3 class="font-bold text-xs text-indigo-700 uppercase tracking-wider">${sec.label}</h3>
+                    <h3 class="font-bold text-xs text-indigo-700 uppercase">${sec.label}</h3>
                     <div class="space-y-2">${rowsHtml}</div>
                 `;
                 container.appendChild(secBox);
             });
         }
 
-        // 수정 데이터 동기화
         function updateData(secKey, idx, field, value) {
             if (currentFlashcardData && currentFlashcardData[secKey][idx]) {
                 currentFlashcardData[secKey][idx][field] = value;
@@ -560,10 +505,15 @@
         }
 
         function escapeHtml(str) {
-            return str.replace(/"/g, '&quot;');
+            return str ? str.replace(/"/g, '&quot;') : '';
         }
 
-        // STEP 5: 프린트 영역 렌더링
+        function confirmAndGoToPrint() {
+            renderPrintArea();
+            goToStep(5);
+        }
+
+        // 인쇄 영역 실시간 렌더링
         function renderPrintArea() {
             const container = document.getElementById('printArea');
             const data = currentFlashcardData;
@@ -578,10 +528,10 @@
             container.innerHTML = `
                 <div class="border-b-2 border-slate-900 pb-2 mb-4 flex justify-between items-end">
                     <div>
-                        <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">SnapFlash 영문 학습 암기장</h1>
-                        <p class="text-[10px] text-slate-500">생성일자: ${data.date}</p>
+                        <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">${data.title}</h1>
+                        <p class="text-[10px] text-slate-500">발행일자: ${data.date}</p>
                     </div>
-                    <span class="text-xs font-bold text-indigo-600 border border-indigo-200 px-2 py-0.5 rounded">A4 규격</span>
+                    <span class="text-xs font-bold text-indigo-600 border border-indigo-200 px-2 py-0.5 rounded">A4 인쇄용</span>
                 </div>
 
                 <div class="space-y-6">
@@ -615,36 +565,32 @@
             `;
         }
 
-        // 프린트 실행
         function triggerPrint() {
             window.print();
         }
 
-        // 완료 처리 및 저장
         function finishProcess() {
             saveToHistory(currentFlashcardData);
             goToStep(6);
         }
 
-        // 히스토리 저장
         function saveToHistory(data) {
             let history = JSON.parse(localStorage.getItem('snapflash_history') || '[]');
             history.unshift({
                 id: Date.now(),
-                title: data.title || '영문 암기장',
+                title: data.title,
                 date: data.date,
                 data: data
             });
-            localStorage.setItem('snapflash_history', JSON.stringify(history.slice(0, 10))); // 최대 10개
+            localStorage.setItem('snapflash_history', JSON.stringify(history.slice(0, 10)));
         }
 
-        // 히스토리 모달 열기
         function openHistoryModal() {
             const container = document.getElementById('historyList');
             let history = JSON.parse(localStorage.getItem('snapflash_history') || '[]');
 
             if (history.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">저장된 생성 기록이 없습니다.</p>`;
+                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">저장된 기록이 없습니다.</p>`;
             } else {
                 container.innerHTML = history.map(item => `
                     <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex justify-between items-center">
@@ -658,7 +604,6 @@
                     </div>
                 `).join('');
             }
-
             document.getElementById('historyModal').classList.remove('hidden');
         }
 
@@ -677,22 +622,12 @@
             }
         }
 
-        // 처음으로 리셋
         function resetAndHome() {
             uploadedImages = { dialogue: [], passage: [], grammar: [], vocab: [], engEng: [] };
             currentFlashcardData = null;
             renderCategoryInputs();
             goToStep(1);
         }
-
-        // Step 5로 이동 시 프린트 영역 자동 준비
-        const origGoToStep = goToStep;
-        goToStep = function(stepNumber) {
-            origGoToStep(stepNumber);
-            if (stepNumber === 5 && currentFlashcardData) {
-                renderPrintArea();
-            }
-        };
     </script>
 </body>
 </html>
